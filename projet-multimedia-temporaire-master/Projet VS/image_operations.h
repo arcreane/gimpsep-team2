@@ -8,3 +8,5 @@ void FactorResizing(cv::Mat image, double factor);
 void LightenDarken(const cv::Mat& image, float factor);
 void CannyEdgeDetection(const cv::Mat& image);
 void FaceDetection(const cv::Mat& image);
+void VideoManipulation(const std::string& filename);
+void BackgroundSeparation(const cv::Mat& image);

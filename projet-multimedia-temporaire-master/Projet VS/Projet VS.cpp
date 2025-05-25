@@ -12,24 +12,41 @@ using namespace cv;
 
 std::string filename;
 
+// Fonction utilitaire simple pour détecter une extension de fichier
+bool isVideoFile(const std::string& path) {
+    std::vector<std::string> videoExtensions = {".mp4", ".avi", ".mov", ".mkv", ".webm", ".flv"};
+    std::string lowerPath = path;
+    std::transform(lowerPath.begin(), lowerPath.end(), lowerPath.begin(), ::tolower);
 
+    for (const auto& ext : videoExtensions) {
+        if (lowerPath.size() >= ext.size() &&
+            lowerPath.compare(lowerPath.size() - ext.size(), ext.size(), ext) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
 
 int main() {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
 #endif
 
-    
-    std::cout << "Entrez le chemin de l’image : ";
+    std::cout << "Entrez le chemin du fichier (image ou vidéo) : ";
     std::getline(std::cin, filename);
 
-    cv::Mat image = cv::imread(filename);
-    if (image.empty()) {
-        std::cerr << "Erreur : l’image n’a pas pu être chargée." << std::endl;
-        return -1;
+    if (isVideoFile(filename)) {
+        std::cout << "Fichier vidéo détecté. Ouverture de l’interface vidéo..." << std::endl;
+        VideoManipulation(filename);
+    } else {
+        cv::Mat image = cv::imread(filename);
+        if (image.empty()) {
+            std::cerr << "Erreur : le fichier n’a pas pu être chargé comme image." << std::endl;
+            return -1;
+        }
+        std::cout << "Image détectée. Ouverture de l’interface image..." << std::endl;
+        Interface(image, filename);
     }
 
-    Interface(image, filename);
-    
     return 0;
 }

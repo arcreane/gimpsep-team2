@@ -96,3 +96,34 @@ void FaceDetection(const cv::Mat& image) {
     }
     WindowManagement("Détection de visage", result);
 }
+
+
+void VideoManipulation(const std::string& filename) {
+	cv::VideoCapture cap(filename);
+	if (!cap.isOpened()) {
+		std::cerr << "Erreur lors de l'ouverture de la vidéo." << std::endl;
+		return;
+	}
+	cv::Mat frame;
+	while (true) {
+		cap >> frame;
+		if (frame.empty()) break;
+		// Afficher le cadre
+		cv::imshow("Vidéo", frame);
+		if (cv::waitKey(30) == 0) break;
+	}
+	cap.release();
+	cv::destroyAllWindows();
+}
+
+void BackgroundSeparation(const cv::Mat& image) {
+   cv::Mat gray, blurred, edges;
+
+   cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+
+   cv::GaussianBlur(gray, blurred, cv::Size(5, 5), 0);
+
+   cv::Canny(blurred, edges, 50, 150);
+
+   WindowManagement("Séparation d'arrière-plan", edges);
+}

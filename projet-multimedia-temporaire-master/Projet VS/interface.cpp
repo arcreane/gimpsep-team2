@@ -25,6 +25,7 @@ struct dataPackage {
     Button* lightenDarkenBtn;
     Button* lightenDarkenField;
     Button* FaceDetectionBtn;
+    Button* BackgroundSeparationBtn;
 
     string* filename;
     Button** activeField; // pointeur vers le champ actif
@@ -116,6 +117,11 @@ void InterfaceMouseCallback(int event, int x, int y, int flags, void* userdataAn
 		std::cout << "Bouton détection de visage cliqué !" << std::endl;
 		FaceDetection(cv::imread(filename));
 	}
+    if (group->BackgroundSeparationBtn->isClicked(x, y)) {
+        std::cout << "Bouton séparation de fond cliqué !" << std::endl;
+        BackgroundSeparation(cv::imread(filename));
+    }
+
 
     // Gestion des clics sur champs texte (activation/désactivation)
     Button* fields[] = {
@@ -169,6 +175,8 @@ void Interface(Mat image, string filename) {
     int spacing = 160;
     Button FaceDetection(spacing * 5, 0, 150, btnHeight, "Détection visage");
 
+	Button BackgroundSeparation(spacing * 6, 0, 150, btnHeight, "Séparation fond");
+
 
     // Pointeur vers le champ actif
     Button* activeField = nullptr;
@@ -181,6 +189,7 @@ void Interface(Mat image, string filename) {
         &factorButton, &factorField,
         &lightenDarkenButton, &lightenDarkenField,
 		& FaceDetection,
+		& BackgroundSeparation,
         &filename, &activeField
     };
 
@@ -194,6 +203,7 @@ void Interface(Mat image, string filename) {
         factorButton.draw(canvas); factorField.draw(canvas);
         lightenDarkenButton.draw(canvas); lightenDarkenField.draw(canvas);
 		FaceDetection.draw(canvas);
+		BackgroundSeparation.draw(canvas);
 
         imshow("Interface", canvas);
         setMouseCallback("Interface", InterfaceMouseCallback, &group);
