@@ -24,6 +24,7 @@ struct dataPackage {
     Button* factorField;
     Button* lightenDarkenBtn;
     Button* lightenDarkenField;
+    Button* FaceDetection;
 
     string* filename;
     Button** activeField; // pointeur vers le champ actif
@@ -111,6 +112,10 @@ void InterfaceMouseCallback(int event, int x, int y, int flags, void* userdataAn
         std::cout << "Bouton luminosité cliqué !" << std::endl;
         tryFunctionFloat(LightenDarken, filename, group->lightenDarkenField->getText());
     }
+	if (group->FaceDetection->isClicked(x, y)) {
+		std::cout << "Bouton détection de visage cliqué !" << std::endl;
+		FaceDetection(cv::imread(filename));
+	}
 
     // Gestion des clics sur champs texte (activation/désactivation)
     Button* fields[] = {
@@ -137,8 +142,11 @@ void InterfaceMouseCallback(int event, int x, int y, int flags, void* userdataAn
 void Interface(Mat image, string filename) {
     int btnHeight = 50;
 
-    // Création de la fenêtre
-    cv::Mat canvas(image.rows + 2 * btnHeight, image.cols, CV_8UC3, cv::Scalar(0, 0, 0));
+    
+    int totalWidth = 800; 
+    int minCanvasWidth = std::max<int>(image.cols, 960);
+
+    cv::Mat canvas(image.rows + 2 * btnHeight, minCanvasWidth, CV_8UC3, cv::Scalar(0, 0, 0));
     image.copyTo(canvas(cv::Rect(0, 2 * btnHeight, image.cols, image.rows)));
 
     // Création des boutons et champs texte
@@ -158,6 +166,10 @@ void Interface(Mat image, string filename) {
     Button lightenDarkenButton(640, 0, 150, btnHeight, "Luminosité");
     Button lightenDarkenField(640, btnHeight, 150, btnHeight, ""); lightenDarkenField.setAsTextField(true);
 
+    int spacing = 160;
+    Button FaceDetection(spacing * 5, 0, 150, btnHeight, "Détection visage");
+
+
     // Pointeur vers le champ actif
     Button* activeField = nullptr;
 
@@ -168,6 +180,7 @@ void Interface(Mat image, string filename) {
         &dimensionButton, &dimensionField1, &dimensionField2,
         &factorButton, &factorField,
         &lightenDarkenButton, &lightenDarkenField,
+		& FaceDetection,
         &filename, &activeField
     };
 
@@ -180,6 +193,7 @@ void Interface(Mat image, string filename) {
         dimensionButton.draw(canvas); dimensionField1.draw(canvas); dimensionField2.draw(canvas);
         factorButton.draw(canvas); factorField.draw(canvas);
         lightenDarkenButton.draw(canvas); lightenDarkenField.draw(canvas);
+		FaceDetection.draw(canvas);
 
         imshow("Interface", canvas);
         setMouseCallback("Interface", InterfaceMouseCallback, &group);

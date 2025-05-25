@@ -79,3 +79,20 @@ void CannyEdgeDetection(const cv::Mat& image) {
 
     WindowManagement("Contours (Canny)", edges);
 }
+
+void FaceDetection(const cv::Mat& image) {
+    cv::CascadeClassifier face_cascade;
+	// Todo: Need to be updated to the correct path of the haarcascade file
+    if (!face_cascade.load("C:/Users/wfrio/Desktop/Projet VS/x64/Debug/haarcascade_frontalface_default.xml")) {
+        std::cerr << "Erreur lors du chargement du fichier cascade\n";
+        return;
+    }
+
+    std::vector<cv::Rect> faces;
+    face_cascade.detectMultiScale(image, faces, 1.1, 3, 0, cv::Size(30, 30));
+    cv::Mat result = image.clone();
+    for (const auto& face : faces) {
+        cv::rectangle(result, face, cv::Scalar(255, 0, 0), 2);
+    }
+    WindowManagement("Détection de visage", result);
+}
