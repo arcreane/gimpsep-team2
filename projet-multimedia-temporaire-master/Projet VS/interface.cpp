@@ -24,7 +24,7 @@ struct dataPackage {
     Button* factorField;
     Button* lightenDarkenBtn;
     Button* lightenDarkenField;
-    Button* FaceDetection;
+    Button* FaceDetectionBtn;
 
     string* filename;
     Button** activeField; // pointeur vers le champ actif
@@ -112,7 +112,7 @@ void InterfaceMouseCallback(int event, int x, int y, int flags, void* userdataAn
         std::cout << "Bouton luminosité cliqué !" << std::endl;
         tryFunctionFloat(LightenDarken, filename, group->lightenDarkenField->getText());
     }
-	if (group->FaceDetection->isClicked(x, y)) {
+	if (group->FaceDetectionBtn->isClicked(x, y)) {
 		std::cout << "Bouton détection de visage cliqué !" << std::endl;
 		FaceDetection(cv::imread(filename));
 	}
