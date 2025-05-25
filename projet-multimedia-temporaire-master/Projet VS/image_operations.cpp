@@ -80,10 +80,9 @@ void CannyEdgeDetection(const cv::Mat& image) {
     WindowManagement("Contours (Canny)", edges);
 }
 
-void FaceDetection(const cv::Mat& image) {
+void FaceDetection(const cv::Mat& image, const std::string& filename) {
     cv::CascadeClassifier face_cascade;
-	// Todo: Need to be updated to the correct path of the haarcascade file
-    if (!face_cascade.load("C:/Users/wfrio/Desktop/Projet VS/x64/Debug/haarcascade_frontalface_default.xml")) {
+    if (!face_cascade.load(filename)) {
         std::cerr << "Erreur lors du chargement du fichier cascade\n";
         return;
     }
@@ -127,3 +126,23 @@ void BackgroundSeparation(const cv::Mat& image) {
 
    WindowManagement("Séparation d'arrière-plan", edges);
 }
+
+
+void StitchImages(const cv::Mat& image1, const cv::Mat& image2) {
+    std::vector<cv::Mat> images = { image1, image2 };
+
+    cv::Ptr<cv::Stitcher> stitcher = cv::Stitcher::create(cv::Stitcher::PANORAMA);
+
+    cv::Mat pano;
+    cv::Stitcher::Status status = stitcher->stitch(images, pano);
+
+    if (status != cv::Stitcher::OK) {
+        std::cerr << "Erreur lors de l'assemblage des images : code d'erreur = " << int(status) << std::endl;
+        return;
+    }
+
+    WindowManagement("Panorama", pano);
+}
+
+
+

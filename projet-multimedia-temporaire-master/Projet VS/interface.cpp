@@ -24,8 +24,10 @@ struct dataPackage {
     Button* factorField;
     Button* lightenDarkenBtn;
     Button* lightenDarkenField;
-    Button* FaceDetectionBtn;
-    Button* BackgroundSeparationBtn;
+    Button* faceDetectionBtn;
+    Button* backgroundSeparationBtn;
+    Button* stitchingBtn;
+    Button* stitchingField;
 
     string* filename;
     Button** activeField; // pointeur vers le champ actif
@@ -34,6 +36,8 @@ struct dataPackage {
 void tryFunction(const std::function<void(cv::Mat, int)>& func, const std::string& filename, const std::string& inputText) {
     try {
         int val = std::stoi(inputText);
+
+        destroyAllWindows();
         func(cv::imread(filename), val);
     }
     catch (const std::invalid_argument&) {
@@ -84,6 +88,25 @@ void tryFunctionFloat(const std::function<void(cv::Mat, float)>& func, const std
     }
 }
 
+void tryStitching(const std::function<void(const cv::Mat&, const cv::Mat&)>& func, const std::string& filename, const std::string& filename2) {
+    try {
+        cv::Mat img1 = cv::imread(filename);
+        cv::Mat img2 = cv::imread(filename2);
+
+        if (img1.empty() || img2.empty()) {
+            std::cerr << "Erreur lors du chargement des images." << std::endl;
+            return;
+        }
+        StitchImages(img1, img2);
+    }
+    catch (const std::invalid_argument&) {
+        std::cerr << "Valeur invalide saisie dans le champ de texte !" << std::endl;
+    }
+    catch (const std::out_of_range&) {
+        std::cerr << "Valeur hors plage !" << std::endl;
+    }
+}
+
 
 
 void InterfaceMouseCallback(int event, int x, int y, int flags, void* userdataAndMore) {
@@ -113,19 +136,23 @@ void InterfaceMouseCallback(int event, int x, int y, int flags, void* userdataAn
         std::cout << "Bouton luminosité cliqué !" << std::endl;
         tryFunctionFloat(LightenDarken, filename, group->lightenDarkenField->getText());
     }
-	if (group->FaceDetectionBtn->isClicked(x, y)) {
+	if (group->faceDetectionBtn->isClicked(x, y)) {
 		std::cout << "Bouton détection de visage cliqué !" << std::endl;
-		FaceDetection(cv::imread(filename));
+		FaceDetection(cv::imread(filename), filename);
 	}
-    if (group->BackgroundSeparationBtn->isClicked(x, y)) {
+    if (group->backgroundSeparationBtn->isClicked(x, y)) {
         std::cout << "Bouton séparation de fond cliqué !" << std::endl;
         BackgroundSeparation(cv::imread(filename));
+    }
+    if (group->stitchingBtn->isClicked(x, y)) {
+        std::cout << "Bouton panorama cliqué !" << std::endl;
+        tryStitching(StitchImages, filename, group->stitchingField->getText());
     }
 
 
     // Gestion des clics sur champs texte (activation/désactivation)
     Button* fields[] = {
-        group->dilatationField, group->erosionField, group->dimensionField1, group->dimensionField2, group->factorField, group->lightenDarkenField
+        group->dilatationField, group->erosionField, group->dimensionField1, group->dimensionField2, group->factorField, group->lightenDarkenField, group->stitchingField
     };
 
     bool fieldActivated = false;
@@ -145,72 +172,81 @@ void InterfaceMouseCallback(int event, int x, int y, int flags, void* userdataAn
     }
 }
 
-void Interface(Mat image, string filename) {
+void Interface(string filename) {
+    cv::Mat image = cv::imread(filename);
+        
     int btnHeight = 50;
+    int spacing = 160;
 
-    
-    int totalWidth = 800; 
-    int minCanvasWidth = std::max<int>(image.cols, 960);
+    auto maxInt = [](int a, int b) { return (a > b) ? a : b; };
 
-    cv::Mat canvas(image.rows + 2 * btnHeight, minCanvasWidth, CV_8UC3, cv::Scalar(0, 0, 0));
+    int minWidth = 1920;
+    int minHeight = 1080;
+
+    int canvasWidth = maxInt(image.cols, minWidth);
+    int canvasHeight = maxInt(image.rows + 2 * btnHeight, minHeight);
+
+    cv::Mat canvas(canvasHeight, canvasWidth, CV_8UC3, cv::Scalar(0, 0, 0));
     image.copyTo(canvas(cv::Rect(0, 2 * btnHeight, image.cols, image.rows)));
 
     // Création des boutons et champs texte
     Button dilatationButton(0, 0, 150, btnHeight, "Dilatation");
     Button dilatationField(0, btnHeight, 150, btnHeight, ""); dilatationField.setAsTextField(true);
 
-    Button erosionButton(160, 0, 150, btnHeight, "Érosion");
+    Button erosionButton(spacing, 0, 150, btnHeight, "Érosion");
     Button erosionField(160, btnHeight, 150, btnHeight, ""); erosionField.setAsTextField(true);
 
-    Button dimensionButton(320, 0, 150, btnHeight, "Redimensionner");
-    Button dimensionField1(320, btnHeight, 70, btnHeight, ""); dimensionField1.setAsTextField(true);
-    Button dimensionField2(400, btnHeight, 70, btnHeight, ""); dimensionField2.setAsTextField(true);
+    Button dimensionButton(spacing * 2, 0, 150, btnHeight, "Redimensionner");
+    Button dimensionField1(spacing * 2, btnHeight, 70, btnHeight, ""); dimensionField1.setAsTextField(true);
+    Button dimensionField2(spacing * 2 + 80, btnHeight, 70, btnHeight, ""); dimensionField2.setAsTextField(true);
 
-    Button factorButton(480, 0, 150, btnHeight, "Refactoriser");
-    Button factorField(480, btnHeight, 150, btnHeight, ""); factorField.setAsTextField(true);
+    Button factorButton(spacing * 3, 0, 150, btnHeight, "Refactoriser");
+    Button factorField(spacing * 3, btnHeight, 150, btnHeight, ""); factorField.setAsTextField(true);
 
-    Button lightenDarkenButton(640, 0, 150, btnHeight, "Luminosité");
-    Button lightenDarkenField(640, btnHeight, 150, btnHeight, ""); lightenDarkenField.setAsTextField(true);
+    Button lightenDarkenButton(spacing * 4, 0, 150, btnHeight, "Luminosité");
+    Button lightenDarkenField(spacing * 4, btnHeight, 150, btnHeight, ""); lightenDarkenField.setAsTextField(true);
 
-    int spacing = 160;
-    Button FaceDetection(spacing * 5, 0, 150, btnHeight, "Détection visage");
+    Button faceDetection(spacing * 5, 0, 150, btnHeight, "Détection visage");
+    Button backgroundSeparation(spacing * 6, 0, 150, btnHeight, "Séparation fond");
 
-	Button BackgroundSeparation(spacing * 6, 0, 150, btnHeight, "Séparation fond");
+    Button stitchingButton(spacing * 7, 0, 150, btnHeight, "Panorama");
+    Button stitchingField(spacing * 7, btnHeight, 150, btnHeight, ""); stitchingField.setAsTextField(true);
 
-
-    // Pointeur vers le champ actif
     Button* activeField = nullptr;
 
-    // Création du groupe de données
     dataPackage group = {
         &dilatationButton, &dilatationField,
         &erosionButton, &erosionField,
         &dimensionButton, &dimensionField1, &dimensionField2,
         &factorButton, &factorField,
         &lightenDarkenButton, &lightenDarkenField,
-		& FaceDetection,
-		& BackgroundSeparation,
+        &faceDetection,
+        &backgroundSeparation,
+        &stitchingButton, &stitchingField,
         &filename, &activeField
     };
 
     // Affichage initial
+    cv::namedWindow("Interface", cv::WINDOW_NORMAL);
+    cv::resizeWindow("Interface", canvasWidth, canvasHeight);
+
     while (true) {
-        // Redessiner interface après chaque opération
         image.copyTo(canvas(cv::Rect(0, 2 * btnHeight, image.cols, image.rows)));
+
         dilatationButton.draw(canvas); dilatationField.draw(canvas);
         erosionButton.draw(canvas); erosionField.draw(canvas);
         dimensionButton.draw(canvas); dimensionField1.draw(canvas); dimensionField2.draw(canvas);
         factorButton.draw(canvas); factorField.draw(canvas);
         lightenDarkenButton.draw(canvas); lightenDarkenField.draw(canvas);
-		FaceDetection.draw(canvas);
-		BackgroundSeparation.draw(canvas);
+        faceDetection.draw(canvas);
+        backgroundSeparation.draw(canvas);
+        stitchingButton.draw(canvas); stitchingField.draw(canvas);
 
         imshow("Interface", canvas);
         setMouseCallback("Interface", InterfaceMouseCallback, &group);
 
         int key = waitKey(0);
-
-        if (key == 27) break; // Bouton échap
+        if (key == 27) break; // Échap
 
         if (activeField != nullptr && activeField->isActive()) {
             if (key == 8 || key == 255) {
@@ -224,3 +260,4 @@ void Interface(Mat image, string filename) {
 
     destroyAllWindows();
 }
+

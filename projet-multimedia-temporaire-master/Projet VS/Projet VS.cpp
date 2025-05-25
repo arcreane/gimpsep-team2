@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "button.h"
 #include "interface.h"
+#include "image_operations.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -12,7 +13,7 @@ using namespace cv;
 
 std::string filename;
 
-// Fonction utilitaire simple pour détecter une extension de fichier
+// Pour détecter s'il s'agit d'une vidéo
 bool isVideoFile(const std::string& path) {
     std::vector<std::string> videoExtensions = {".mp4", ".avi", ".mov", ".mkv", ".webm", ".flv"};
     std::string lowerPath = path;
@@ -45,7 +46,7 @@ int main() {
             return -1;
         }
         std::cout << "Image détectée. Ouverture de l’interface image..." << std::endl;
-        Interface(image, filename);
+        Interface(filename);
     }
 
     return 0;
