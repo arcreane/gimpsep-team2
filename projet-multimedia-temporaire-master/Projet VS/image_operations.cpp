@@ -2,36 +2,37 @@
 #include "utils.h"
 #include <iostream>
 
-void Dilatation(cv::Mat image, int dilationSize) {
+cv::Mat Dilatation(const cv::Mat& image, int dilationSize) {
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(dilationSize, dilationSize));
     cv::Mat dst;
     cv::dilate(image, dst, kernel);
-    WindowManagement("Image dilatée", dst);
+    return dst;
 }
 
-void Erosion(cv::Mat image, int erosionSize) {
+
+cv::Mat Erosion(cv::Mat image, int erosionSize) {
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(erosionSize, erosionSize));
     cv::Mat dst;
     cv::erode(image, dst, kernel);
-    WindowManagement("Image érodée", dst);
+    return dst;
 }
 
-void DimensionResizing(cv::Mat image, int xDimension, int yDimension) {
+cv::Mat DimensionResizing(cv::Mat image, int xDimension, int yDimension) {
     cv::Mat dst;
     cv::resize(image, dst, cv::Size(xDimension, yDimension));
-    WindowManagement("Image redimensionnée", dst);
+    return dst;
 }
 
-void FactorResizing(cv::Mat image, double factor) {
+cv::Mat FactorResizing(cv::Mat image, double factor) {
     cv::Mat dst;
     cv::resize(image, dst, cv::Size(), factor, factor);
-    WindowManagement("Image redimensionnée", dst);
+    return dst;
 }
 
-void LightenDarken(const cv::Mat& image, float factor) {
+cv::Mat LightenDarken(const cv::Mat& image, float factor) {
     if (factor < -1.0f || factor > 1.0f) {
         std::cerr << "Facteur invalide. Veuillez entrer une valeur entre -1.0 et 1.0." << std::endl;
-        return;
+        return image;
     }
 
     cv::Mat hsvImage;
@@ -48,43 +49,37 @@ void LightenDarken(const cv::Mat& image, float factor) {
 
     cv::Mat result;
     cv::cvtColor(hsvImage, result, cv::COLOR_HSV2BGR);
-    WindowManagement("Image éclaircie/assombrie", result);
+    return result;
 }
 
 
-void CannyEdgeDetection(const cv::Mat& image) {
-    int lowerThreshold, upperThreshold;
-    float blurIntensity;
-
-    std::cout << "Entrez le seuil inférieur : ";
-    std::cin >> lowerThreshold;
-
-    std::cout << "Entrez le seuil supérieur : ";
-    std::cin >> upperThreshold;
-
-    std::cout << "Entrez l'intensité du flou : ";
-    std::cin >> blurIntensity;
-
+cv::Mat CannyEdgeDetection(const cv::Mat& image, int lowerThreshold, int upperThreshold, float blurIntensity) {
+    
     // Convertir en niveaux de gris
     cv::Mat gray;
     cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
 
     // Réduire le bruit avec un flou
     cv::Mat blurred;
-    cv::GaussianBlur(gray, blurred, cv::Size(5, 5), blurIntensity);
+    cv::GaussianBlur(gray, blurred, cv::Size(5, 5), 2);
 
     // Détection des contours
     cv::Mat edges;
-    cv::Canny(blurred, edges, lowerThreshold, upperThreshold);
+    cv::Canny(blurred, edges, 20, 80);
 
-    WindowManagement("Contours (Canny)", edges);
+    // Re-conversion en BGR pour compatibilité avec le canvas
+    cv::Mat edgesColor;
+    cv::cvtColor(edges, edgesColor, cv::COLOR_GRAY2BGR);
+
+    return edgesColor;
 }
 
-void FaceDetection(const cv::Mat& image, const std::string& filename) {
+
+cv::Mat FaceDetection(const cv::Mat& image, const std::string& filename) {
     cv::CascadeClassifier face_cascade;
     if (!face_cascade.load(filename)) {
         std::cerr << "Erreur lors du chargement du fichier cascade\n";
-        return;
+        return image;
     }
 
     std::vector<cv::Rect> faces;
@@ -93,9 +88,9 @@ void FaceDetection(const cv::Mat& image, const std::string& filename) {
     for (const auto& face : faces) {
         cv::rectangle(result, face, cv::Scalar(255, 0, 0), 2);
     }
-    WindowManagement("Détection de visage", result);
-}
 
+    return result;
+}
 
 void VideoManipulation(const std::string& filename) {
 	cv::VideoCapture cap(filename);
@@ -115,7 +110,7 @@ void VideoManipulation(const std::string& filename) {
 	cv::destroyAllWindows();
 }
 
-void BackgroundSeparation(const cv::Mat& image) {
+cv::Mat BackgroundSeparation(const cv::Mat& image) {
    cv::Mat gray, blurred, edges;
 
    cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
@@ -124,11 +119,11 @@ void BackgroundSeparation(const cv::Mat& image) {
 
    cv::Canny(blurred, edges, 50, 150);
 
-   WindowManagement("Séparation d'arrière-plan", edges);
+   return edges;
 }
 
 
-void StitchImages(const cv::Mat& image1, const cv::Mat& image2) {
+cv::Mat StitchImages(const cv::Mat& image1, const cv::Mat& image2) {
     std::vector<cv::Mat> images = { image1, image2 };
 
     cv::Ptr<cv::Stitcher> stitcher = cv::Stitcher::create(cv::Stitcher::PANORAMA);
@@ -138,10 +133,10 @@ void StitchImages(const cv::Mat& image1, const cv::Mat& image2) {
 
     if (status != cv::Stitcher::OK) {
         std::cerr << "Erreur lors de l'assemblage des images : code d'erreur = " << int(status) << std::endl;
-        return;
+        return image1;
     }
 
-    WindowManagement("Panorama", pano);
+    return pano;
 }
 
 

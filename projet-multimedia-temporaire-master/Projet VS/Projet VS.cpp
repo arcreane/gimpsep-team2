@@ -32,7 +32,6 @@ int main() {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
 #endif
-
     std::cout << "Entrez le chemin du fichier (image ou vidéo) : ";
     std::getline(std::cin, filename);
 
