@@ -3,16 +3,16 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 
-// Nom de la fenêtre principale
+// Name of the main window 
 static const std::string MAIN_WINDOW_NAME = "Interface";
 
-/// Affiche directement dans la fenêtre principale sans en créer une nouvelle.
+/// Displays directly in the main window without creating a new one.
 inline void WindowManagement(const std::string& /*windowTitle*/, const cv::Mat& img) {
-    // On se base toujours sur MAIN_WINDOW_NAME
+    // We always base ourselves on MAIN_WINDOW_NAME
     cv::imshow(MAIN_WINDOW_NAME, img);
 
-    // On laisse un tout petit délai pour que l'image s'affiche,
-    // mais sans bloquer (0 ms). La boucle d'affichage d'Interface
-    // continue de tourner.
+    // We allow a very short delay for the image to display,
+    // but without blocking (0 ms). The Interface display loop
+    // continues to run.
     cv::waitKey(1);
 }

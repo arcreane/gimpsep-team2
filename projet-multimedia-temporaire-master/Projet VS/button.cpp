@@ -13,12 +13,12 @@ Button::Button(int x, int y, int width, int height,
 void Button::draw(cv::Mat& canvas) const {
     cv::Scalar drawColor = isTextField && active ? cv::Scalar(255, 255, 255) : bgColor;
     cv::rectangle(canvas, area, drawColor, cv::FILLED);
-    cv::rectangle(canvas, area, cv::Scalar(0, 0, 0), 1); // Bordure
+    cv::rectangle(canvas, area, cv::Scalar(0, 0, 0), 1); // Border
 
     int baseline = 0;
     cv::Size textSize = cv::getTextSize(label, cv::FONT_HERSHEY_PLAIN, fontScale, thickness, &baseline);
     cv::Point textOrg(
-        area.x + 5, // Pour champs texte : aligné à gauche
+		area.x + 5, // To add some padding to the left
         area.y + (area.height + textSize.height) / 2
     );
     cv::putText(canvas, label, textOrg, cv::FONT_HERSHEY_PLAIN, fontScale, textColor, thickness);

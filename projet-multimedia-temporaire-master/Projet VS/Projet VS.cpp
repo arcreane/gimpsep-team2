@@ -13,7 +13,7 @@ using namespace cv;
 
 std::string filename;
 
-// Pour détecter s'il s'agit d'une vidéo
+// For checking if the file is a video
 bool isVideoFile(const std::string& path) {
     std::vector<std::string> videoExtensions = {".mp4", ".avi", ".mov", ".mkv", ".webm", ".flv"};
     std::string lowerPath = path;

@@ -11,7 +11,7 @@ using namespace std;
 using namespace cv;
 
 
-// Structure pour regrouper plusieurs boutons
+// Structure to hold the data for the interface
 struct dataPackage {
     Button* dilatationBtn;
     Button* dilatationField;
@@ -38,13 +38,13 @@ struct dataPackage {
 
     string* filename;
     Mat* pCurrentImage;
-    Button** activeField; // pointeur vers le champ actif
+	Button** activeField; // point to the currently active text field
 };
 
 static void tryFunction(const std::function<cv::Mat(const cv::Mat&, int)>& func, dataPackage* group, const std::string& inputText) {
     try {
         int val = std::stoi(inputText);
-        // On remplace l’image actuelle par celle résultant de l'opération
+		// we replace the current image with the result of the function
         *(group->pCurrentImage) = func(*(group->pCurrentImage), val);
     }
     catch (const std::invalid_argument&) {
@@ -160,7 +160,7 @@ static void InterfaceMouseCallback(int event, int x, int y, int flags, void* use
     dataPackage* group = static_cast<dataPackage*>(userdataAndMore);
     const string& filename = *(group->filename);
 
-    // Gestion des clics sur les boutons
+	// Manage button clicks
     if (group->dilatationBtn->isClicked(x, y)) {
         std::cout << "Bouton dilatation cliqué !" << std::endl;
         tryFunction(ImageOperations::Dilatation, group, group->dilatationField->getText());
@@ -211,7 +211,7 @@ static void InterfaceMouseCallback(int event, int x, int y, int flags, void* use
 
 
 
-    // Gestion des clics sur champs texte (activation/désactivation)
+	// Manage text field activation
     Button* fields[] = {
         group->dilatationField, group->erosionField, group->dimensionField1, group->dimensionField2, group->factorField, group->lightenDarkenField, group->stitchingField, group->cannyField1, group->cannyField2, group->cannyField3, group->saveField
     };
@@ -253,7 +253,7 @@ void Interface(string filename) {
     cv::Mat canvas(canvasHeight, canvasWidth, CV_8UC3, cv::Scalar(0, 0, 0));
     image.copyTo(canvas(cv::Rect(0, 2 * btnHeight, image.cols, image.rows)));
 
-    // Création des boutons et champs texte
+	// Creation of buttons and text fields
     Button dilatationButton(0, 0, 150, btnHeight, "Dilatation");
     Button dilatationField(0, btnHeight, 150, btnHeight, ""); dilatationField.setAsTextField(true);
 
@@ -305,7 +305,7 @@ void Interface(string filename) {
         &activeField
     };
 
-    // Affichage initial
+	// Create the window and set its properties
     cv::namedWindow("GimpSEP", cv::WINDOW_NORMAL);
     cv::resizeWindow("GimpSEP", canvasWidth, canvasHeight);
 
@@ -327,7 +327,7 @@ void Interface(string filename) {
         setMouseCallback("GimpSEP", InterfaceMouseCallback, &usefulThings);
 
         int key = waitKey(1);
-        if (key == 27) break; // Échap
+        if (key == 27) break; // Escape
 
         if (activeField != nullptr && activeField->isActive()) {
             if (key == 8 || key == 255) {
