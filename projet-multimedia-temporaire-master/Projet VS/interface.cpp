@@ -41,7 +41,7 @@ struct dataPackage {
     Button** activeField; // pointeur vers le champ actif
 };
 
-void tryFunction(const std::function<cv::Mat(const cv::Mat&, int)>& func, dataPackage* group, const std::string& inputText) {
+static void tryFunction(const std::function<cv::Mat(const cv::Mat&, int)>& func, dataPackage* group, const std::string& inputText) {
     try {
         int val = std::stoi(inputText);
         // On remplace l’image actuelle par celle résultant de l'opération
@@ -55,7 +55,7 @@ void tryFunction(const std::function<cv::Mat(const cv::Mat&, int)>& func, dataPa
     }
 }
 
-void tryFunctionTwoFields(const std::function<Mat(cv::Mat, int, int)>& func, dataPackage* group, const std::string& inputText1, const std::string& inputText2) {
+static void tryFunctionTwoFields(const std::function<Mat(cv::Mat, int, int)>& func, dataPackage* group, const std::string& inputText1, const std::string& inputText2) {
     try {
         int val1 = std::stoi(inputText1);
         int val2 = std::stoi(inputText2);
@@ -69,7 +69,7 @@ void tryFunctionTwoFields(const std::function<Mat(cv::Mat, int, int)>& func, dat
     }
 }
 
-void tryCanny(const std::function<Mat(cv::Mat, int, int, float)>& func, dataPackage* group, const std::string& inputText1, const std::string& inputText2, const std::string& inputText3) {
+static void tryCanny(const std::function<Mat(cv::Mat, int, int, float)>& func, dataPackage* group, const std::string& inputText1, const std::string& inputText2, const std::string& inputText3) {
     try {
         int val1 = std::stoi(inputText1);
         int val2 = std::stoi(inputText2);
@@ -104,7 +104,7 @@ void tryFunctionDouble(const std::function<Mat(cv::Mat, double)>& func, dataPack
     }
 }
 
-void tryFunctionFloat(const std::function<Mat(cv::Mat, float)>& func, dataPackage* group, const std::string& inputText) {
+static void tryFunctionFloat(const std::function<Mat(cv::Mat, float)>& func, dataPackage* group, const std::string& inputText) {
     try {
         float val = std::stof(inputText);
         *(group->pCurrentImage) = func(*(group->pCurrentImage), val);
@@ -117,7 +117,7 @@ void tryFunctionFloat(const std::function<Mat(cv::Mat, float)>& func, dataPackag
     }
 }
 
-void tryStitching(const std::function<Mat(const cv::Mat&, const cv::Mat&)>& func, dataPackage* group, const std::string& filename2) {
+static void tryStitching(const std::function<Mat(const cv::Mat&, const cv::Mat&)>& func, dataPackage* group, const std::string& filename2) {
     try {
         cv::Mat img2 = cv::imread(filename2);
 
@@ -136,10 +136,25 @@ void tryStitching(const std::function<Mat(const cv::Mat&, const cv::Mat&)>& func
     }
 }
 
+static void tryBackgroundSeparation(const std::function<cv::Mat(const cv::Mat&)>& func, dataPackage* group) {
+    try {
+        if (group->pCurrentImage->empty()) {
+            std::cerr << "Image vide au moment de la séparation de fond !" << std::endl;
+            return;
+        }
+
+        *(group->pCurrentImage) = func(*(group->pCurrentImage));
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Erreur lors de la séparation de fond : " << e.what() << std::endl;
+    }
+}
 
 
 
-void InterfaceMouseCallback(int event, int x, int y, int flags, void* userdataAndMore) {
+
+
+static void InterfaceMouseCallback(int event, int x, int y, int flags, void* userdataAndMore) {
     if (event != EVENT_LBUTTONDOWN) return;
 
     dataPackage* group = static_cast<dataPackage*>(userdataAndMore);
@@ -176,7 +191,7 @@ void InterfaceMouseCallback(int event, int x, int y, int flags, void* userdataAn
 	}
     if (group->backgroundSeparationBtn->isClicked(x, y)) {
         std::cout << "Bouton séparation de fond cliqué !" << std::endl;
-        BackgroundSeparation(cv::imread(filename));
+        tryBackgroundSeparation(BackgroundSeparation, group);
     }
     if (group->stitchingBtn->isClicked(x, y)) {
         std::cout << "Bouton panorama cliqué !" << std::endl;
@@ -274,7 +289,7 @@ void Interface(string filename) {
 
     Button* activeField = nullptr;
 
-    dataPackage group = {
+    dataPackage usefulThings = {
         &dilatationButton, &dilatationField,
         &erosionButton, &erosionField,
         &dimensionButton, &dimensionField1, &dimensionField2,
@@ -309,7 +324,7 @@ void Interface(string filename) {
         saveButton.draw(canvas); saveField.draw(canvas);
 
         imshow("GimpSEP", canvas);
-        setMouseCallback("GimpSEP", InterfaceMouseCallback, &group);
+        setMouseCallback("GimpSEP", InterfaceMouseCallback, &usefulThings);
 
         int key = waitKey(1);
         if (key == 27) break; // Échap

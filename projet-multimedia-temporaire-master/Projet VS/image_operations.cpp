@@ -2,6 +2,7 @@
 #include "utils.h"
 #include <iostream>
 
+//Arnaud
 cv::Mat Dilatation(const cv::Mat& image, int dilationSize) {
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(dilationSize, dilationSize));
     cv::Mat dst;
@@ -9,7 +10,7 @@ cv::Mat Dilatation(const cv::Mat& image, int dilationSize) {
     return dst;
 }
 
-
+//Arnaud
 cv::Mat Erosion(cv::Mat image, int erosionSize) {
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(erosionSize, erosionSize));
     cv::Mat dst;
@@ -17,18 +18,21 @@ cv::Mat Erosion(cv::Mat image, int erosionSize) {
     return dst;
 }
 
+//Wassim
 cv::Mat DimensionResizing(cv::Mat image, int xDimension, int yDimension) {
     cv::Mat dst;
     cv::resize(image, dst, cv::Size(xDimension, yDimension));
     return dst;
 }
 
+//Wassim
 cv::Mat FactorResizing(cv::Mat image, double factor) {
     cv::Mat dst;
     cv::resize(image, dst, cv::Size(), factor, factor);
     return dst;
 }
 
+//Alexandre
 cv::Mat LightenDarken(const cv::Mat& image, float factor) {
     if (factor < -1.0f || factor > 1.0f) {
         std::cerr << "Facteur invalide. Veuillez entrer une valeur entre -1.0 et 1.0." << std::endl;
@@ -52,7 +56,7 @@ cv::Mat LightenDarken(const cv::Mat& image, float factor) {
     return result;
 }
 
-
+//Alexandre
 cv::Mat CannyEdgeDetection(const cv::Mat& image, int lowerThreshold, int upperThreshold, float blurIntensity) {
     
     // Convertir en niveaux de gris
@@ -74,7 +78,7 @@ cv::Mat CannyEdgeDetection(const cv::Mat& image, int lowerThreshold, int upperTh
     return edgesColor;
 }
 
-
+//Wassim
 cv::Mat FaceDetection(const cv::Mat& image, const std::string& filename) {
     cv::CascadeClassifier face_cascade;
     if (!face_cascade.load(filename)) {
@@ -92,6 +96,7 @@ cv::Mat FaceDetection(const cv::Mat& image, const std::string& filename) {
     return result;
 }
 
+//Rayane
 void VideoManipulation(const std::string& filename) {
 	cv::VideoCapture cap(filename);
 	if (!cap.isOpened()) {
@@ -110,19 +115,46 @@ void VideoManipulation(const std::string& filename) {
 	cv::destroyAllWindows();
 }
 
+//Alexandre
 cv::Mat BackgroundSeparation(const cv::Mat& image) {
-   cv::Mat gray, blurred, edges;
+    // Convert in grey
+    cv::Mat gris;
+    cv::cvtColor(image, gris, cv::COLOR_BGR2GRAY);
 
-   cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+    // Blur to limit noise
+    cv::Mat flou;
+    cv::GaussianBlur(gris, flou, cv::Size(5, 5), 0);
 
-   cv::GaussianBlur(gray, blurred, cv::Size(5, 5), 0);
+    // Adaptive threshold
+    cv::Mat binaire;
+    cv::adaptiveThreshold(flou, binaire, 255, cv::ADAPTIVE_THRESH_MEAN_C,
+        cv::THRESH_BINARY_INV, 11, 2);
 
-   cv::Canny(blurred, edges, 50, 150);
+    // Detect contours
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(binaire, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-   return edges;
+    // Empty mask
+    cv::Mat masque = cv::Mat::zeros(image.size(), CV_8UC1);
+
+    // Draw bigger contours
+    for (const auto& contour : contours) {
+        if (cv::contourArea(contour) > 500) { // Adjust threshold here
+            cv::drawContours(masque, std::vector<std::vector<cv::Point>>{contour}, -1, 255, cv::FILLED);
+        }
+    }
+
+    // Aplpy mask to initial image
+    cv::Mat resultat;
+    image.copyTo(resultat, masque);
+
+    return resultat;
 }
 
 
+
+
+//Rayane
 cv::Mat StitchImages(const cv::Mat& image1, const cv::Mat& image2) {
     std::vector<cv::Mat> images = { image1, image2 };
 
