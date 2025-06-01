@@ -6,7 +6,7 @@ class Button {
 public:
     Button(int x, int y, int width, int height,
         const std::string& text,
-        cv::Scalar bg = cv::Scalar(200, 200, 200),
+        cv::Scalar bg = cv::Scalar(255, 255, 255),
         cv::Scalar txt = cv::Scalar(0, 0, 0),
         double font = 1.0, int thick = 1);
 

@@ -73,7 +73,9 @@ cv::Mat ImageOperations::FaceDetection(const cv::Mat& image, const std::string& 
     for (const auto& face : faces) {
         cv::rectangle(result, face, cv::Scalar(255, 0, 0), 2);
     }
-
+    cv::imshow("Visages détectés", result);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
     return result;
 }
 
