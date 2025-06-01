@@ -163,39 +163,39 @@ static void InterfaceMouseCallback(int event, int x, int y, int flags, void* use
     // Gestion des clics sur les boutons
     if (group->dilatationBtn->isClicked(x, y)) {
         std::cout << "Bouton dilatation cliqué !" << std::endl;
-        tryFunction(Dilatation, group, group->dilatationField->getText());
+        tryFunction(ImageOperations::Dilatation, group, group->dilatationField->getText());
     }
     if (group->erosionBtn->isClicked(x, y)) {
         std::cout << "Bouton érosion cliqué !" << std::endl;
-        tryFunction(Erosion, group, group->erosionField->getText());
+        tryFunction(ImageOperations::Erosion, group, group->erosionField->getText());
     }
     if (group->dimensionBtn->isClicked(x, y)) {
         std::cout << "Bouton redimensionner cliqué !" << std::endl;
-        tryFunctionTwoFields(DimensionResizing, group, group->dimensionField1->getText(), group->dimensionField2->getText());
+        tryFunctionTwoFields(ImageOperations::DimensionResizing, group, group->dimensionField1->getText(), group->dimensionField2->getText());
     }
     if (group->factorBtn->isClicked(x, y)) {
         std::cout << "Bouton refactoriser cliqué !" << std::endl;
-        tryFunctionDouble(FactorResizing, group, group->factorField->getText());
+        tryFunctionDouble(ImageOperations::FactorResizing, group, group->factorField->getText());
     }
     if (group->lightenDarkenBtn->isClicked(x, y)) {
         std::cout << "Bouton luminosité cliqué !" << std::endl;
-        tryFunctionFloat(LightenDarken, group, group->lightenDarkenField->getText());
+        tryFunctionFloat(ImageOperations::LightenDarken, group, group->lightenDarkenField->getText());
     }
     if (group->cannyBtn->isClicked(x, y)) {
         std::cout << "Bouton détection des bords de canny cliqué !" << std::endl;
-        tryCanny(CannyEdgeDetection, group, group->cannyField1->getText(), group->cannyField2->getText(), group->cannyField3->getText());
+        tryCanny(ImageOperations::CannyEdgeDetection, group, group->cannyField1->getText(), group->cannyField2->getText(), group->cannyField3->getText());
     }
-	if (group->faceDetectionBtn->isClicked(x, y)) {
-		std::cout << "Bouton détection de visage cliqué !" << std::endl;
-		FaceDetection(cv::imread(filename), filename);
-	}
+    if (group->faceDetectionBtn->isClicked(x, y)) {
+        std::cout << "Bouton détection de visage cliqué !" << std::endl;
+        ImageOperations::FaceDetection(cv::imread(filename), filename);
+    }
     if (group->backgroundSeparationBtn->isClicked(x, y)) {
         std::cout << "Bouton séparation de fond cliqué !" << std::endl;
-        tryBackgroundSeparation(BackgroundSeparation, group);
+        tryBackgroundSeparation(ImageOperations::BackgroundSeparation, group);
     }
     if (group->stitchingBtn->isClicked(x, y)) {
         std::cout << "Bouton panorama cliqué !" << std::endl;
-        tryStitching(StitchImages, group, group->stitchingField->getText());
+        tryStitching(ImageOperations::StitchImages, group, group->stitchingField->getText());
     }
     if (group->saveBtn->isClicked(x, y)) {
         std::cout << "Bouton Sauvegarder cliqué !" << std::endl;
@@ -238,7 +238,7 @@ static void InterfaceMouseCallback(int event, int x, int y, int flags, void* use
 
 void Interface(string filename) {
     cv::Mat image = cv::imread(filename);
-        
+
     int btnHeight = 50;
     int spacing = 160;
 
@@ -262,7 +262,7 @@ void Interface(string filename) {
 
     Button dimensionButton(spacing * 2, 0, 150, btnHeight, "Redimensionner");
     Button dimensionField1(spacing * 2, btnHeight, 70, btnHeight, ""); dimensionField1.setAsTextField(true);
-    Button dimensionField2(spacing * 2 + spacing/2, btnHeight, 70, btnHeight, ""); dimensionField2.setAsTextField(true);
+    Button dimensionField2(spacing * 2 + spacing / 2, btnHeight, 70, btnHeight, ""); dimensionField2.setAsTextField(true);
 
     Button factorButton(spacing * 3, 0, 150, btnHeight, "Refactoriser");
     Button factorField(spacing * 3, btnHeight, 150, btnHeight, ""); factorField.setAsTextField(true);
@@ -273,7 +273,7 @@ void Interface(string filename) {
     Button cannyButton(spacing * 5, 0, 150, btnHeight, "Canny edge detection");
     Button cannyField1(spacing * 5, btnHeight, 50, btnHeight, ""); cannyField1.setAsTextField(true);
     Button cannyField2(spacing * 5 + spacing / 3, btnHeight, 50, btnHeight, ""); cannyField2.setAsTextField(true);
-    Button cannyField3(spacing * 5 + (2*spacing) / 3, btnHeight, 50, btnHeight, ""); cannyField3.setAsTextField(true);
+    Button cannyField3(spacing * 5 + (2 * spacing) / 3, btnHeight, 50, btnHeight, ""); cannyField3.setAsTextField(true);
 
     Button faceDetection(spacing * 6, 0, 150, btnHeight, "Detection visage");
 

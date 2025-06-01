@@ -37,7 +37,7 @@ int main() {
 
     if (isVideoFile(filename)) {
         std::cout << "Fichier vidéo détecté. Ouverture de l’interface vidéo..." << std::endl;
-        VideoManipulation(filename);
+        ImageOperations::VideoManipulation(filename);
     } else {
         cv::Mat image = cv::imread(filename);
         if (image.empty()) {
