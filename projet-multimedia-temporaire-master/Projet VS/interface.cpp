@@ -163,39 +163,39 @@ static void InterfaceMouseCallback(int event, int x, int y, int flags, void* use
     // Gestion des clics sur les boutons
     if (group->dilatationBtn->isClicked(x, y)) {
         std::cout << "Bouton dilatation cliqué !" << std::endl;
-        tryFunction(Dilatation, group, group->dilatationField->getText());
+        tryFunction(ImageOperations::Dilatation, group, group->dilatationField->getText());
     }
     if (group->erosionBtn->isClicked(x, y)) {
         std::cout << "Bouton érosion cliqué !" << std::endl;
-        tryFunction(Erosion, group, group->erosionField->getText());
+        tryFunction(ImageOperations::Erosion, group, group->erosionField->getText());
     }
     if (group->dimensionBtn->isClicked(x, y)) {
         std::cout << "Bouton redimensionner cliqué !" << std::endl;
-        tryFunctionTwoFields(DimensionResizing, group, group->dimensionField1->getText(), group->dimensionField2->getText());
+        tryFunctionTwoFields(ImageOperations::DimensionResizing, group, group->dimensionField1->getText(), group->dimensionField2->getText());
     }
     if (group->factorBtn->isClicked(x, y)) {
         std::cout << "Bouton refactoriser cliqué !" << std::endl;
-        tryFunctionDouble(FactorResizing, group, group->factorField->getText());
+        tryFunctionDouble(ImageOperations::FactorResizing, group, group->factorField->getText());
     }
     if (group->lightenDarkenBtn->isClicked(x, y)) {
         std::cout << "Bouton luminosité cliqué !" << std::endl;
-        tryFunctionFloat(LightenDarken, group, group->lightenDarkenField->getText());
+        tryFunctionFloat(ImageOperations::LightenDarken, group, group->lightenDarkenField->getText());
     }
     if (group->cannyBtn->isClicked(x, y)) {
         std::cout << "Bouton détection des bords de canny cliqué !" << std::endl;
-        tryCanny(CannyEdgeDetection, group, group->cannyField1->getText(), group->cannyField2->getText(), group->cannyField3->getText());
+        tryCanny(ImageOperations::CannyEdgeDetection, group, group->cannyField1->getText(), group->cannyField2->getText(), group->cannyField3->getText());
     }
 	if (group->faceDetectionBtn->isClicked(x, y)) {
 		std::cout << "Bouton détection de visage cliqué !" << std::endl;
-		FaceDetection(cv::imread(filename), filename);
+        ImageOperations::FaceDetection(cv::imread(filename), filename);
 	}
     if (group->backgroundSeparationBtn->isClicked(x, y)) {
         std::cout << "Bouton séparation de fond cliqué !" << std::endl;
-        tryBackgroundSeparation(BackgroundSeparation, group);
+        tryBackgroundSeparation(ImageOperations::BackgroundSeparation, group);
     }
     if (group->stitchingBtn->isClicked(x, y)) {
         std::cout << "Bouton panorama cliqué !" << std::endl;
-        tryStitching(StitchImages, group, group->stitchingField->getText());
+        tryStitching(ImageOperations::StitchImages, group, group->stitchingField->getText());
     }
     if (group->saveBtn->isClicked(x, y)) {
         std::cout << "Bouton Sauvegarder cliqué !" << std::endl;
