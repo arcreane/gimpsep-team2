@@ -45,4 +45,9 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="haarcascade_frontalface_default.xml">
+      <Filter>Fichiers de ressources</Filter>
+    </Xml>
+  </ItemGroup>
 </Project>

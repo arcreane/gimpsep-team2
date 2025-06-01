@@ -18,7 +18,7 @@ cv::Mat Erosion(cv::Mat image, int erosionSize) {
     return dst;
 }
 
-//Wassim
+//Rayane
 cv::Mat DimensionResizing(cv::Mat image, int xDimension, int yDimension) {
     cv::Mat dst;
     cv::resize(image, dst, cv::Size(xDimension, yDimension));
@@ -80,21 +80,30 @@ cv::Mat CannyEdgeDetection(const cv::Mat& image, int lowerThreshold, int upperTh
 
 //Wassim
 cv::Mat FaceDetection(const cv::Mat& image, const std::string& filename) {
+    if (image.empty()) {
+        return image;
+    }
+
     cv::CascadeClassifier face_cascade;
     if (!face_cascade.load(filename)) {
-        std::cerr << "Erreur lors du chargement du fichier cascade\n";
         return image;
     }
 
     std::vector<cv::Rect> faces;
     face_cascade.detectMultiScale(image, faces, 1.1, 3, 0, cv::Size(30, 30));
+
     cv::Mat result = image.clone();
     for (const auto& face : faces) {
         cv::rectangle(result, face, cv::Scalar(255, 0, 0), 2);
     }
 
+    cv::imshow("Visages détectés", result);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+
     return result;
 }
+
 
 //Rayane
 void VideoManipulation(const std::string& filename) {

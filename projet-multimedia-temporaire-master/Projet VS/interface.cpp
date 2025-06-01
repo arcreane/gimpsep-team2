@@ -187,7 +187,8 @@ static void InterfaceMouseCallback(int event, int x, int y, int flags, void* use
     }
 	if (group->faceDetectionBtn->isClicked(x, y)) {
 		std::cout << "Bouton détection de visage cliqué !" << std::endl;
-		FaceDetection(cv::imread(filename), filename);
+        
+        FaceDetection(cv::imread(filename), "haarcascade_frontalface_default.xml");
 	}
     if (group->backgroundSeparationBtn->isClicked(x, y)) {
         std::cout << "Bouton séparation de fond cliqué !" << std::endl;
