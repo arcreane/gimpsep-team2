@@ -1,5 +1,4 @@
 #include "image_operations.h"
-#include "utils.h"
 #include "button.h"
 #include "interface.h"
 
@@ -48,10 +47,10 @@ static void tryFunction(const std::function<cv::Mat(const cv::Mat&, int)>& func,
         *(group->pCurrentImage) = func(*(group->pCurrentImage), val);
     }
     catch (const std::invalid_argument&) {
-        std::cerr << "Valeur invalide saisie dans le champ de texte !" << std::endl;
+        std::cerr << "Invalid value entered in the text field!" << std::endl;
     }
     catch (const std::out_of_range&) {
-        std::cerr << "Valeur hors plage !" << std::endl;
+        std::cerr << "Value out of range!" << std::endl;
     }
 }
 
@@ -62,10 +61,10 @@ static void tryFunctionTwoFields(const std::function<Mat(cv::Mat, int, int)>& fu
         *(group->pCurrentImage) = func(*(group->pCurrentImage), val1, val2);
     }
     catch (const std::invalid_argument&) {
-        std::cerr << "Valeur invalide saisie dans le champ de texte !" << std::endl;
+        std::cerr << "Invalid value entered in the text field!" << std::endl;
     }
     catch (const std::out_of_range&) {
-        std::cerr << "Valeur hors plage !" << std::endl;
+        std::cerr << "Value out of range!" << std::endl;
     }
 }
 
@@ -75,32 +74,31 @@ static void tryCanny(const std::function<Mat(cv::Mat, int, int, float)>& func, d
         int val2 = std::stoi(inputText2);
         float val3 = std::stof(inputText3);
 
-        std::cout << "bliiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiip";
         if (group->pCurrentImage->empty()) {
-            std::cerr << "Image vide au moment de CannyEdgeDetection !" << std::endl;
+            std::cerr << "Empty image at the time of CannyEdgeDetection!" << std::endl;
             return;
         }
 
         *(group->pCurrentImage) = func(*(group->pCurrentImage), val1, val2, val3);
     }
     catch (const std::invalid_argument&) {
-        std::cerr << "Valeur invalide saisie dans le champ de texte !" << std::endl;
+        std::cerr << "Invalid value entered in the text field!" << std::endl;
     }
     catch (const std::out_of_range&) {
-        std::cerr << "Valeur hors plage !" << std::endl;
+        std::cerr << "Value out of range!" << std::endl;
     }
 }
 
-void tryFunctionDouble(const std::function<Mat(cv::Mat, double)>& func, dataPackage* group, const std::string& inputText) {
+static void tryFunctionDouble(const std::function<Mat(cv::Mat, double)>& func, dataPackage* group, const std::string& inputText) {
     try {
         double val = std::stod(inputText);
         *(group->pCurrentImage) = func(*(group->pCurrentImage), val);
     }
     catch (const std::invalid_argument&) {
-        std::cerr << "Valeur invalide saisie dans le champ de texte !" << std::endl;
+        std::cerr << "Invalid value entered in the text field!" << std::endl;
     }
     catch (const std::out_of_range&) {
-        std::cerr << "Valeur hors plage !" << std::endl;
+        std::cerr << "Value out of range!" << std::endl;
     }
 }
 
@@ -110,10 +108,10 @@ static void tryFunctionFloat(const std::function<Mat(cv::Mat, float)>& func, dat
         *(group->pCurrentImage) = func(*(group->pCurrentImage), val);
     }
     catch (const std::invalid_argument&) {
-        std::cerr << "Valeur invalide saisie dans le champ de texte !" << std::endl;
+        std::cerr << "Invalid value entered in the text field!" << std::endl;
     }
     catch (const std::out_of_range&) {
-        std::cerr << "Valeur hors plage !" << std::endl;
+        std::cerr << "Value out of range!" << std::endl;
     }
 }
 
@@ -122,31 +120,31 @@ static void tryStitching(const std::function<Mat(const cv::Mat&, const cv::Mat&)
         cv::Mat img2 = cv::imread(filename2);
 
         if (img2.empty()) {
-            std::cerr << "Erreur lors du chargement des images." << std::endl;
+            std::cerr << "Error when loading images." << std::endl;
             return;
         }
 
         *(group->pCurrentImage) = func(*(group->pCurrentImage), img2);
     }
     catch (const std::invalid_argument&) {
-        std::cerr << "Valeur invalide saisie dans le champ de texte !" << std::endl;
+        std::cerr << "Invalid value entered in the text field!" << std::endl;
     }
     catch (const std::out_of_range&) {
-        std::cerr << "Valeur hors plage !" << std::endl;
+        std::cerr << "Value out of range!" << std::endl;
     }
 }
 
 static void tryBackgroundSeparation(const std::function<cv::Mat(const cv::Mat&)>& func, dataPackage* group) {
     try {
         if (group->pCurrentImage->empty()) {
-            std::cerr << "Image vide au moment de la séparation de fond !" << std::endl;
+            std::cerr << "Empty image at the moment of background separation!" << std::endl;
             return;
         }
 
         *(group->pCurrentImage) = func(*(group->pCurrentImage));
     }
-    catch (const std::exception& e) {
-        std::cerr << "Erreur lors de la séparation de fond : " << e.what() << std::endl;
+    catch (const std::exception& error) {
+        std::cerr << "Error when background separation: " << error.what() << std::endl;
     }
 }
 
@@ -162,50 +160,52 @@ static void InterfaceMouseCallback(int event, int x, int y, int flags, void* use
 
 	// Manage button clicks
     if (group->dilatationBtn->isClicked(x, y)) {
-        std::cout << "Bouton dilatation cliqué !" << std::endl;
+        std::cout << "Dilation button pressed!" << std::endl;
         tryFunction(ImageOperations::Dilatation, group, group->dilatationField->getText());
     }
     if (group->erosionBtn->isClicked(x, y)) {
-        std::cout << "Bouton érosion cliqué !" << std::endl;
+        std::cout << "Erosion button pressed!" << std::endl;
         tryFunction(ImageOperations::Erosion, group, group->erosionField->getText());
     }
     if (group->dimensionBtn->isClicked(x, y)) {
-        std::cout << "Bouton redimensionner cliqué !" << std::endl;
+        std::cout << "Resize button pressed!" << std::endl;
         tryFunctionTwoFields(ImageOperations::DimensionResizing, group, group->dimensionField1->getText(), group->dimensionField2->getText());
     }
     if (group->factorBtn->isClicked(x, y)) {
-        std::cout << "Bouton refactoriser cliqué !" << std::endl;
+        std::cout << "Refactor button pressed!" << std::endl;
         tryFunctionDouble(ImageOperations::FactorResizing, group, group->factorField->getText());
     }
     if (group->lightenDarkenBtn->isClicked(x, y)) {
-        std::cout << "Bouton luminosité cliqué !" << std::endl;
+        std::cout << "Luminosity button pressed!" << std::endl;
         tryFunctionFloat(ImageOperations::LightenDarken, group, group->lightenDarkenField->getText());
     }
     if (group->cannyBtn->isClicked(x, y)) {
-        std::cout << "Bouton détection des bords de canny cliqué !" << std::endl;
+        std::cout << "Canny edge detection button pressed!" << std::endl;
         tryCanny(ImageOperations::CannyEdgeDetection, group, group->cannyField1->getText(), group->cannyField2->getText(), group->cannyField3->getText());
     }
     if (group->faceDetectionBtn->isClicked(x, y)) {
-        std::cout << "Bouton détection de visage cliqué !" << std::endl;
+        std::cout << "Face detection button pressed!" << std::endl;
         ImageOperations::FaceDetection(cv::imread(filename), "haarcascade_frontalface_default.xml");
     }
     if (group->backgroundSeparationBtn->isClicked(x, y)) {
-        std::cout << "Bouton séparation de fond cliqué !" << std::endl;
+        std::cout << "Background separation button pressed!" << std::endl;
         tryBackgroundSeparation(ImageOperations::BackgroundSeparation, group);
     }
     if (group->stitchingBtn->isClicked(x, y)) {
-        std::cout << "Bouton panorama cliqué !" << std::endl;
+        std::cout << "Panorama/stitching button pressed!" << std::endl;
         tryStitching(ImageOperations::StitchImages, group, group->stitchingField->getText());
     }
+
+    // Wassim
     if (group->saveBtn->isClicked(x, y)) {
-        std::cout << "Bouton Sauvegarder cliqué !" << std::endl;
+        std::cout << "Save button pressed!" << std::endl;
         std::string savePath = group->saveField->getText();
         bool success = cv::imwrite(savePath, *(group->pCurrentImage));
         if (success) {
-            std::cout << "Image sauvegardée dans " << savePath << std::endl;
+            std::cout << "Image saved in " << savePath << std::endl;
         }
         else {
-            std::cerr << "Erreur lors de la sauvegarde." << std::endl;
+            std::cerr << "Error when saving." << std::endl;
         }
     }
 
@@ -254,35 +254,36 @@ void Interface(string filename) {
     image.copyTo(canvas(cv::Rect(0, 2 * btnHeight, image.cols, image.rows)));
 
 	// Creation of buttons and text fields
-    Button dilatationButton(0, 0, 150, btnHeight, "Dilatation");
+    Button dilatationButton(0, 0, 150, btnHeight, "Dilation");
     Button dilatationField(0, btnHeight, 150, btnHeight, ""); dilatationField.setAsTextField(true);
 
     Button erosionButton(spacing, 0, 150, btnHeight, "Erosion");
     Button erosionField(spacing, btnHeight, 150, btnHeight, ""); erosionField.setAsTextField(true);
 
-    Button dimensionButton(spacing * 2, 0, 150, btnHeight, "Redimensionner");
+    Button dimensionButton(spacing * 2, 0, 150, btnHeight, "Resize");
     Button dimensionField1(spacing * 2, btnHeight, 70, btnHeight, ""); dimensionField1.setAsTextField(true);
     Button dimensionField2(spacing * 2 + spacing / 2, btnHeight, 70, btnHeight, ""); dimensionField2.setAsTextField(true);
 
-    Button factorButton(spacing * 3, 0, 150, btnHeight, "Refactoriser");
+    Button factorButton(spacing * 3, 0, 150, btnHeight, "Refactor");
     Button factorField(spacing * 3, btnHeight, 150, btnHeight, ""); factorField.setAsTextField(true);
 
-    Button lightenDarkenButton(spacing * 4, 0, 150, btnHeight, "Luminosite");
+    Button lightenDarkenButton(spacing * 4, 0, 150, btnHeight, "Luminosity");
     Button lightenDarkenField(spacing * 4, btnHeight, 150, btnHeight, ""); lightenDarkenField.setAsTextField(true);
 
-    Button cannyButton(spacing * 5, 0, 150, btnHeight, "Canny edge detection");
+    Button cannyButton(spacing * 5, 0, 150, btnHeight, "Canny edge");
     Button cannyField1(spacing * 5, btnHeight, 50, btnHeight, ""); cannyField1.setAsTextField(true);
     Button cannyField2(spacing * 5 + spacing / 3, btnHeight, 50, btnHeight, ""); cannyField2.setAsTextField(true);
     Button cannyField3(spacing * 5 + (2 * spacing) / 3, btnHeight, 50, btnHeight, ""); cannyField3.setAsTextField(true);
 
-    Button faceDetection(spacing * 6, 0, 150, btnHeight, "Detection visage");
+    Button faceDetection(spacing * 6, 0, 150, btnHeight, "Face detection");
 
-    Button backgroundSeparation(spacing * 7, 0, 150, btnHeight, "Separation fond");
+    Button backgroundSeparation(spacing * 7, 0, 150, btnHeight, "BG separation");
 
     Button stitchingButton(spacing * 8, 0, 150, btnHeight, "Panorama");
     Button stitchingField(spacing * 8, btnHeight, 150, btnHeight, ""); stitchingField.setAsTextField(true);
 
-    Button saveButton(spacing * 9, 0, 150, btnHeight, "Sauvegarder");
+    // Wassim
+    Button saveButton(spacing * 9, 0, 150, btnHeight, "Save");
     Button saveField(spacing * 9, btnHeight, 150, btnHeight, ""); saveField.setAsTextField(true);
 
 
@@ -323,8 +324,8 @@ void Interface(string filename) {
         stitchingButton.draw(canvas); stitchingField.draw(canvas);
         saveButton.draw(canvas); saveField.draw(canvas);
 
-        imshow("GimpSEP", canvas);
-        setMouseCallback("GimpSEP", InterfaceMouseCallback, &usefulThings);
+        cv::imshow("GimpSEP", canvas);
+        cv::setMouseCallback("GimpSEP", InterfaceMouseCallback, &usefulThings);
 
         int key = waitKey(1);
         if (key == 27) break; // Escape

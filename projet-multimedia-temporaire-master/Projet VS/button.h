@@ -34,8 +34,8 @@ public:
 
 
 private:
-    bool isTextField = false;
-    bool active = false;       // to know if the user writes in it
+    bool isTextField = false;   // To know if it is a textfield or not lol
+    bool active = false;       // To know if the user writes in it
 
     cv::Rect area;
     std::string label;

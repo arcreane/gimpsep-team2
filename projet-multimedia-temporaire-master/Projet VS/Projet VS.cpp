@@ -1,8 +1,6 @@
 #include "image_operations.h"
-#include "utils.h"
 #include "button.h"
 #include "interface.h"
-#include "image_operations.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -14,7 +12,7 @@ using namespace cv;
 std::string filename;
 
 // For checking if the file is a video
-bool isVideoFile(const std::string& path) {
+static bool isVideoFile(const std::string& path) {
     std::vector<std::string> videoExtensions = {".mp4", ".avi", ".mov", ".mkv", ".webm", ".flv"};
     std::string lowerPath = path;
     std::transform(lowerPath.begin(), lowerPath.end(), lowerPath.begin(), ::tolower);
@@ -32,19 +30,19 @@ int main() {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
 #endif
-    std::cout << "Entrez le chemin du fichier (image ou vidéo) : ";
+    std::cout << "Type in the path of the file (image or video): ";
     std::getline(std::cin, filename);
 
     if (isVideoFile(filename)) {
-        std::cout << "Fichier vidéo détecté. Ouverture de l’interface vidéo..." << std::endl;
+        std::cout << "Video file detected. Video interface opening..." << std::endl;
         ImageOperations::VideoManipulation(filename);
     } else {
         cv::Mat image = cv::imread(filename);
         if (image.empty()) {
-            std::cerr << "Erreur : le fichier n’a pas pu être chargé comme image." << std::endl;
+            std::cerr << "Error: the file could not be loaded as an image." << std::endl;
             return -1;
         }
-        std::cout << "Image détectée. Ouverture de l’interface image..." << std::endl;
+        std::cout << "Image detected. Opening the image interface..." << std::endl;
         Interface(filename);
     }
 

@@ -1,5 +1,5 @@
-#ifndef IMAGE_PROCESSOR_H
-#define IMAGE_PROCESSOR_H
+#ifndef IMAGE_OPERATIONS_H
+#define IMAGE_OPERATIONS_H
 
 #include <opencv2/opencv.hpp>
 #include <string>
@@ -27,4 +27,4 @@ public:
     static cv::Mat StitchImages(const cv::Mat& image1, const cv::Mat& image2);
 };
 
-#endif // IMAGE_PROCESSOR_H
+#endif // IMAGE_OPERATIONS_H
